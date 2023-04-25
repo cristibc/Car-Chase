@@ -22,9 +22,9 @@ GLboolean leftUpPressed = false;
 GLboolean rightUpPressed = false;
 int obstacol1, obstacol2, obstacol3;
 bool initObstacle1, initObstacle2, initObstacle3;
-double iObstacol1 = 270;
-double iObstacol2 = 270;
-double iObstacol3 = 270;
+double iObstacol1;
+double iObstacol2;
+double iObstacol3;
 
 
 void delay(unsigned int milisecunde)
@@ -68,9 +68,9 @@ void displayText(int x, int y, float r, float g, float b, const char* string)
 }
 
 void Obstacole(int value) {
-	iObstacol1 = 270;
-	iObstacol2 = 270;
-	iObstacol3 = 270;
+	iObstacol1 = 0;
+	iObstacol2 = 0;
+	iObstacol3 = 0;
 
 	initObstacle1 = false;
 	initObstacle2 = false;
@@ -131,15 +131,15 @@ void miscareGirofar(void) {
 	}
 
 
-	if (initObstacle1 == 1 && iObstacol1 > -300) {
+	if (initObstacle1 == 1 && iObstacol1 > -600) {
 		iObstacol1 -= 1.5;
 	}
 
-	if (initObstacle2 == 1 && iObstacol2 > -300) {
+	if (initObstacle2 == 1 && iObstacol2 > -600) {
 		iObstacol2 -= 1.5;
 	}
 
-	if (initObstacle3 == 1 && iObstacol3 > -300) {
+	if (initObstacle3 == 1 && iObstacol3 > -600) {
 		iObstacol3 -= 1.5;
 	}
 
@@ -311,12 +311,24 @@ void desenDrum(void)
 	glPopMatrix();
 
 	// Obstacole
+
+	glPushMatrix();
+	glTranslated(0, iObstacol1, 0);
 	glColor3f(0, 0, 0);
-	glRectf(-175, iObstacol1, -105, iObstacol1+30);
+	glRectf(-175, 270, -105, 300);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(0, iObstacol2, 0);
 	glColor3f(0, 0, 0);
-	glRectf(-35, iObstacol2, 35, iObstacol2+30);
+	glRectf(-35, 270, 35, 300);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslated(0, iObstacol3, 0);
 	glColor3f(0, 0, 0);
-	glRectf(110, iObstacol3, 180, iObstacol3+30);
+	glRectf(110, 270, 180, 300);
+	glPopMatrix();
 
 	// incrementare pentru girofar si alte translatii
 	glutIdleFunc(miscareGirofar);
