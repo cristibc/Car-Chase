@@ -5,6 +5,7 @@
 #include <iostream>
 #include <time.h>
 #include <random>
+#include <string> 
 
 using namespace std;
 
@@ -23,6 +24,7 @@ int obstacol1, obstacol2, obstacol3;
 bool initObstacle1, initObstacle2, initObstacle3;
 double iObstacol1, iObstacol2, iObstacol3;
 bool collisionCheck = false;
+double score = 0;
 
 
 void delay(unsigned int milisecunde)
@@ -30,6 +32,13 @@ void delay(unsigned int milisecunde)
 	clock_t goal = milisecunde + clock();
 	while (goal > clock());
 }
+
+void increaseScore(int value) {
+		score += 1;
+
+	glutTimerFunc(100, increaseScore, 0);
+}
+
 
 class scrPt
 {
@@ -77,41 +86,43 @@ void Obstacole(int value) {
 	initObstacle3 = false;
 
 	// Generam un set de obstacole pozitionate random, intre 1 si 2 obstacole
-	srand(time(NULL));
-	cout << "Called function" << endl;
-	obstacol1 = rand() % 2;
-	obstacol2 = rand() % 2;
-	obstacol3 = rand() % 2;
-	int sumObstacol = obstacol1 + obstacol2 + obstacol3;
-	while (sumObstacol < 1 || sumObstacol > 2) {
-		cout << obstacol1 << " " << obstacol2 << " " << obstacol3 << endl;
+	if (collisionCheck != true) {
+		srand(time(NULL));
+		cout << "Called function" << endl;
 		obstacol1 = rand() % 2;
 		obstacol2 = rand() % 2;
 		obstacol3 = rand() % 2;
-		sumObstacol = obstacol1 + obstacol2 + obstacol3;
+		int sumObstacol = obstacol1 + obstacol2 + obstacol3;
+		while (sumObstacol < 1 || sumObstacol > 2) {
+			cout << obstacol1 << " " << obstacol2 << " " << obstacol3 << endl;
+			obstacol1 = rand() % 2;
+			obstacol2 = rand() % 2;
+			obstacol3 = rand() % 2;
+			sumObstacol = obstacol1 + obstacol2 + obstacol3;
+		}
+		cout << "Good obstacle path: " << obstacol1 << " " << obstacol2 << " " << obstacol3 << endl;
+
+
+		if (obstacol1 == 1) {
+			initObstacle1 = true;
+		}
+
+		if (obstacol2 == 1) {
+			initObstacle2 = true;
+		}
+
+		if (obstacol3 == 1) {
+			initObstacle3 = true;
+		}
 	}
-	cout << "Good obstacle path: "<< obstacol1 << " " << obstacol2 << " " << obstacol3 << endl;
-
-
-	if (obstacol1 == 1) {
-		initObstacle1 = true;
-	}
-
-	if (obstacol2 == 1) {
-		initObstacle2 = true;
-	}
-
-	if (obstacol3 == 1) {
-		initObstacle3 = true;
-	}
-
-	// Timer pentru loop-ul obstacolelor
-	glutTimerFunc(4000, Obstacole, 0);
+		// Timer pentru loop-ul obstacolelor
+		glutTimerFunc(4000, Obstacole, 0);
+	
 }
 
-void Collision(double x1, double y1, double x2, double y2, double width, double height) {
+void Collision(double x1, double y1, double x2, double y2, double xWidth, double xHeight, double yWidth, double yHeight) {
 	//double x1, y1, x2, y2, width, height;
-	if (x1 < x2 + width && x1 + width > x2 && y1 < y2 + height && y1 + height > y2)
+	if (x1 < x2 + yWidth && x1 + xWidth > x2 && y1 < y2 + yHeight && y1 + xHeight > y2)
 	{
 		cout << "Collision detected\n";
 		collisionCheck = true;
@@ -133,36 +144,36 @@ void miscareGirofar(void) {
 
 	// Pentru input-ul left key - right key
 	if (leftUpPressed && i > -190) {
-		i -= 1.3;
+		i -= 1.3 + score / 1600;
 	}
 
 	if (rightUpPressed && i < 90) {
-		i += 1.3;
+		i += 1.3 + score / 1600;
 	}
 
 	// Indice pentru axul drumului, indica viteza scenei
-	iViteza += 1.5;
+	iViteza += 1 + score/400;
 	if (iViteza > 519) {
 		iViteza = 260;
 	}
 
 	// Indice pentru translatia obstacolelor
 	if (initObstacle1 == 1 && iObstacol1 > -650) {
-		iObstacol1 -= 1.5;
+		iObstacol1 -= 1 + score/400;
 	}
 
 	if (initObstacle2 == 1 && iObstacol2 > -650) {
-		iObstacol2 -= 1.5;
+		iObstacol2 -= 1 + score / 400;
 	}
 
 	if (initObstacle3 == 1 && iObstacol3 > -650) {
-		iObstacol3 -= 1.5;
+		iObstacol3 -= 1 + score / 400;
 	}
 
 	// Collision check
-	Collision(-175, iObstacol1 + 360, i + 20, -90, 65, 90);
-	Collision(-35, iObstacol2 + 360, i + 20, -90, 65, 90);
-	Collision(110, iObstacol3 + 360, i + 20, -90, 65, 90);
+	Collision(-160, iObstacol1 + 360, i + 20, -90, 65, 90, 65, 90);
+	Collision(-35, iObstacol2 + 360, i + 20, -90, 65, 90, 65, 90);
+	Collision(95, iObstacol3 + 360, i + 20, -90, 65, 90, 65, 90);
 
 
 	//TODO add power-ups
@@ -227,9 +238,15 @@ void keyPressed(int key, int x, int y)
 	case GLUT_KEY_RIGHT:
 		rightUpPressed = true;
 		break;
+	case GLUT_KEY_HOME:
+		glClearColor(0.6235294, 0.239215, 0, 1);
+		collisionCheck = false;
+		score = 0;
+		break;
 	default:
 		break;
 	}
+	glutPostRedisplay();
 }
 
 
@@ -340,7 +357,7 @@ void desenDrum(void)
 		glTranslated(0, iObstacol1, 0);
 		glColor3f(0, 0, 0);
 		//glRectf(-175, 270, -105, 300); // placeholder cube obstacle
-		glRectf(-175, 270, -110, 360);
+		glRectf(-160, 270, -95, 360);
 		glPopMatrix();
 
 		glPushMatrix();
@@ -354,24 +371,40 @@ void desenDrum(void)
 		glTranslated(0, iObstacol3, 0);
 		glColor3f(0, 0, 0);
 		//glRectf(110, 270, 180, 300);
-		glRectf(110, 270, 175, 360);
+		glRectf(95, 270, 160, 360);
 		glPopMatrix();
 
 		// incrementare pentru girofar si alte translatii
 		glutIdleFunc(miscareGirofar);
 
-		displayText(-250, 230, 1, 1, 1, "Alpha Build");
+		displayText(-240, 220, 1, 1, 1, "Score: ");
+		string scoreString = to_string(int(score));
+		const char* scoreDisplayable = scoreString.c_str();
+		displayText(-195, 219, 1, 1, 1, scoreDisplayable);
 
 		glutSwapBuffers();
 		glFlush();
+
 	}
 	else {
-		glFlush();
-		glClearColor(0, 0 , 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		int highScore = score;
+		string highScoreString = to_string(highScore);
+		const char* highScoreDisplayable = highScoreString.c_str();
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glutIdleFunc(NULL);
+		iObstacol1 = 0;
+		iObstacol2 = 0;
+		iObstacol3 = 0;
+		glColor3f(0.5, 1, 1);
 		displayText(-50, 0, 1, 1, 1, "Game Over!");
+		displayText(-60, -30, 1, 1, 1, "High Score: ");
+		displayText(23, -31, 1, 1, 1, highScoreDisplayable);
+
+
 		glutSwapBuffers();
 	}
+
 }
 
 
@@ -404,7 +437,8 @@ void main(int argc, char** argv)
 
 	glutDisplayFunc(desenDrum);
 	glutReshapeFunc(winReshapeFcn);
-	glutTimerFunc(3000, Obstacole, 0);
+	glutTimerFunc(5000, Obstacole, 0);
+	glutTimerFunc(100, increaseScore, 0);
 
 	glutSpecialFunc(keyPressed);
 	glutSpecialUpFunc(keyUp);
