@@ -8,7 +8,6 @@
 #include <time.h>
 #include <random>
 #include <string> 
-#include "stb_image.h"
 
 using namespace std;
 
