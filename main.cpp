@@ -1,11 +1,15 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <windows.h>
 #include <math.h>
 #include <stdlib.h>
+#include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <iostream>
 #include <time.h>
 #include <random>
 #include <string> 
+#include "stb_image.h"
 
 using namespace std;
 
@@ -25,6 +29,7 @@ bool initObstacle1, initObstacle2, initObstacle3;
 double iObstacol1, iObstacol2, iObstacol3;
 bool collisionCheck = false;
 double score = 0;
+
 
 
 void delay(unsigned int milisecunde)
@@ -190,7 +195,7 @@ static void init(void)
 	GLint n = 2000;
 
 	// 159 / 255 , 61 / 255 , 0 , 1
-	glClearColor(0.6235294, 0.239215, 0, 1);
+	glClearColor(0, 0.839, 0.082, 1);
 	gluOrtho2D(-100, 100, -100, 100);
 
 
@@ -239,7 +244,7 @@ void keyPressed(int key, int x, int y)
 		rightUpPressed = true;
 		break;
 	case GLUT_KEY_HOME:
-		glClearColor(0.6235294, 0.239215, 0, 1);
+		glClearColor(0, 0.839, 0.082, 1);
 		collisionCheck = false;
 		score = 0;
 		break;
@@ -257,6 +262,9 @@ void desenDrum(void)
 		glClear(GL_COLOR_BUFFER_BIT);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+
+		glColor3f(0, 0.522, 0.051);
+		glRectf(-1000., -1000., 1000, 1000.);
 
 
 		// DRUMUL
