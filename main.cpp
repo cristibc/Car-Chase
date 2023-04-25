@@ -7,6 +7,7 @@
 #include <random>
 #include <string> 
 
+#define FPS 30
 using namespace std;
 
 const double TWO_PI = 6.2831853;
@@ -25,7 +26,8 @@ bool initObstacle1, initObstacle2, initObstacle3;
 double iObstacol1, iObstacol2, iObstacol3;
 bool collisionCheck = false;
 double score = 0;
-
+int initialTime = time(NULL), finalTime, frameRate;
+float theta = 0;
 
 
 void delay(unsigned int milisecunde)
@@ -40,6 +42,11 @@ void increaseScore(int value) {
 	glutTimerFunc(100, increaseScore, 0);
 }
 
+void idle(int) {
+	glutPostRedisplay();
+	glutTimerFunc(1000 / FPS, idle, 0);
+	theta++;
+}
 
 class scrPt
 {
@@ -74,6 +81,9 @@ void displayText(int x, int y, float r, float g, float b, const char* string)
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
 	}
 }
+
+
+
 
 void Obstacole(int value) {
 	// Initializam indicele pentru translatie
@@ -129,7 +139,6 @@ void Collision(double x1, double y1, double x2, double y2, double xWidth, double
 		collisionCheck = true;
 	}
 
-
 }
 
 
@@ -145,30 +154,30 @@ void miscareGirofar(void) {
 
 	// Pentru input-ul left key - right key
 	if (leftUpPressed && i > -190) {
-		i -= 1.3 + score / 1600;
+		i -= 1.3;
 	}
 
 	if (rightUpPressed && i < 90) {
-		i += 1.3 + score / 1600;
+		i += 1.3;
 	}
 
 	// Indice pentru axul drumului, indica viteza scenei
-	iViteza += 1 + score/400;
+	iViteza += 1;
 	if (iViteza > 519) {
 		iViteza = 260;
 	}
 
 	// Indice pentru translatia obstacolelor
 	if (initObstacle1 == 1 && iObstacol1 > -650) {
-		iObstacol1 -= 1 + score/400;
+		iObstacol1 -= 1;
 	}
 
 	if (initObstacle2 == 1 && iObstacol2 > -650) {
-		iObstacol2 -= 1 + score / 400;
+		iObstacol2 -= 1;
 	}
 
 	if (initObstacle3 == 1 && iObstacol3 > -650) {
-		iObstacol3 -= 1 + score / 400;
+		iObstacol3 -= 1;
 	}
 
 	// Collision check
@@ -176,10 +185,7 @@ void miscareGirofar(void) {
 	Collision(-35, iObstacol2 + 360, i + 20, -90, 65, 90, 65, 90);
 	Collision(95, iObstacol3 + 360, i + 20, -90, 65, 90, 65, 90);
 
-
 	//TODO add power-ups
-
-
 	glutPostRedisplay();
 }
 
@@ -259,6 +265,7 @@ void desenDrum(void)
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
+		// Fundal
 		glColor3f(0, 0.522, 0.051);
 		glRectf(-1000., -1000., 1000, 1000.);
 
@@ -285,6 +292,7 @@ void desenDrum(void)
 		// initializare pentru tranzitii
 		glPushMatrix();
 		glTranslated(i, 0, 0);
+
 
 		// MASINA DE POLITIE
 		// sasiu
@@ -360,7 +368,6 @@ void desenDrum(void)
 		glPushMatrix();
 		glTranslated(0, iObstacol1, 0);
 		glColor3f(0, 0, 0);
-		//glRectf(-175, 270, -105, 300); // placeholder cube obstacle
 		glRectf(-160, 270, -95, 360);
 		glPopMatrix();
 
@@ -405,10 +412,15 @@ void desenDrum(void)
 		displayText(-60, -30, 1, 1, 1, "High Score: ");
 		displayText(23, -31, 1, 1, 1, highScoreDisplayable);
 
-
 		glutSwapBuffers();
 	}
-
+	frameRate++;
+	finalTime = time(NULL);
+	if (finalTime - initialTime > 0) {
+		cout << "FPS: " << frameRate / (finalTime - initialTime) << endl;
+		frameRate = 0;
+		initialTime = finalTime;
+	}
 }
 
 
@@ -441,16 +453,18 @@ void main(int argc, char** argv)
 
 	glutDisplayFunc(desenDrum);
 	glutReshapeFunc(winReshapeFcn);
+
 	glutTimerFunc(5000, Obstacole, 0);
 	glutTimerFunc(100, increaseScore, 0);
+	glutTimerFunc(1000 / FPS, idle, 0);
 
 	glutSpecialFunc(keyPressed);
 	glutSpecialUpFunc(keyUp);
 
 	glutAttachMenu(GLUT_MIDDLE_BUTTON);
+	Sleep(1);
 
 	glutMainLoop();
-
 
 }
 
