@@ -1,5 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
-
 #include <windows.h>
 #include <math.h>
 #include <stdlib.h>
