@@ -26,8 +26,6 @@ bool initObstacle1, initObstacle2, initObstacle3;
 double iObstacol1, iObstacol2, iObstacol3;
 bool collisionCheck = false;
 double score = 0;
-int initialTime = time(NULL), finalTime, frameRate;
-float theta = 0;
 
 
 void delay(unsigned int milisecunde)
@@ -37,16 +35,13 @@ void delay(unsigned int milisecunde)
 }
 
 void increaseScore(int value) {
+	if (collisionCheck != true) {
 		score += 1;
-
+	}
 	glutTimerFunc(100, increaseScore, 0);
 }
 
-void idle(int) {
-	glutPostRedisplay();
-	glutTimerFunc(1000 / FPS, idle, 0);
-	theta++;
-}
+
 
 class scrPt
 {
@@ -126,9 +121,9 @@ void Obstacole(int value) {
 			initObstacle3 = true;
 		}
 	}
-		// Timer pentru loop-ul obstacolelor
-		glutTimerFunc(4000, Obstacole, 0);
-	
+	// Timer pentru loop-ul obstacolelor
+	glutTimerFunc(4000, Obstacole, 0);
+
 }
 
 void Collision(double x1, double y1, double x2, double y2, double xWidth, double xHeight, double yWidth, double yHeight) {
@@ -140,7 +135,6 @@ void Collision(double x1, double y1, double x2, double y2, double xWidth, double
 	}
 
 }
-
 
 void miscareGirofar(void) {
 	// pentru girofar
@@ -154,36 +148,36 @@ void miscareGirofar(void) {
 
 	// Pentru input-ul left key - right key
 	if (leftUpPressed && i > -190) {
-		i -= 1.3;
+		i -= 1.3 + score / 1600;
 	}
 
 	if (rightUpPressed && i < 90) {
-		i += 1.3;
+		i += 1.3 + score / 1600;
 	}
 
 	// Indice pentru axul drumului, indica viteza scenei
 	iViteza += 1;
 	if (iViteza > 519) {
-		iViteza = 260;
+		iViteza = 260 + score / 400;
 	}
 
 	// Indice pentru translatia obstacolelor
 	if (initObstacle1 == 1 && iObstacol1 > -650) {
-		iObstacol1 -= 1;
+		iObstacol1 -= 1 + score / 400;
 	}
 
 	if (initObstacle2 == 1 && iObstacol2 > -650) {
-		iObstacol2 -= 1;
+		iObstacol2 -= 1 + score / 400;
 	}
 
 	if (initObstacle3 == 1 && iObstacol3 > -650) {
-		iObstacol3 -= 1;
+		iObstacol3 -= 1 + score / 400;
 	}
 
 	// Collision check
-	Collision(-160, iObstacol1 + 360, i + 20, -90, 65, 90, 65, 90);
-	Collision(-35, iObstacol2 + 360, i + 20, -90, 65, 90, 65, 90);
-	Collision(95, iObstacol3 + 360, i + 20, -90, 65, 90, 65, 90);
+	Collision(-160, iObstacol1 + 360, i + 20, -90, 60, 90, 60, 90);
+	Collision(-35, iObstacol2 + 360, i + 20, -90, 60, 90, 60, 90);
+	Collision(95, iObstacol3 + 360, i + 20, -90, 60, 90, 60, 90);
 
 	//TODO add power-ups
 	glutPostRedisplay();
@@ -217,6 +211,10 @@ static void init(void)
 	// pentru opacitatea culorilor
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Muzica fundal
+	sndPlaySound(TEXT("nightrider.wav"), SND_ASYNC);
+	//playSound("nightrider.wav")
 
 }
 
@@ -265,8 +263,9 @@ void desenDrum(void)
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
+
 		// Fundal
-		glColor3f(0, 0.522, 0.051);
+		glColor3f(0, 0, 0.2);
 		glRectf(-1000., -1000., 1000, 1000.);
 
 
@@ -302,7 +301,6 @@ void desenDrum(void)
 		glRectf(20, -155, 80, -115);
 		glColor3f(0, 0, 0);
 		glRectf(20, -115, 80, -90);
-
 
 		// stopuri
 		glColor3f(1, 0, 0);
@@ -365,25 +363,67 @@ void desenDrum(void)
 
 		// Obstacole
 
+		//Obstacol1
 		glPushMatrix();
 		glTranslated(0, iObstacol1, 0);
-		glColor3f(0, 0, 0);
-		glRectf(-160, 270, -95, 360);
+		//glColor3f(0, 0, 0);
+		//glRectf(-160, 270, -100, 360);
+
+		//Sasiu
+		glColor3f(0.678, 0, 0.678);
+		glRectf(-160, 270, -100, 295);
+		glColor3f(0.878, 0, 0.878);
+		glRectf(-160, 295, -100, 335);
+		glColor3f(0.678, 0, 0.678);
+		glRectf(-160, 335, -100, 360);
+		// stopuri
+		glColor3f(1, 0, 0);
+		glRectf(-155, 265, -145, 270);
+		glColor3f(1, 0, 0);
+		glRectf(-115, 265, -105, 270);
+		// faruri fata
+		glColor3f(1, 1, 0);
+		glRectf(-155, 360, -145, 365);
+		glColor3f(1, 1, 0);
+		glRectf(-115, 360, -105, 365);
+
 		glPopMatrix();
 
+		// Obstacol2
 		glPushMatrix();
 		glTranslated(0, iObstacol2, 0);
 		glColor3f(0, 0, 0);
-		//glRectf(-35, 270, 35, 300);
-		glRectf(-35, 270, 30, 360);
+		glRectf(-35, 270, 25, 360);
+
+		//		//Sasiu
+		//glColor3f(0.678, 0, 0.678);
+		//glRectf(-35, 270, 25, 295);
+		//glColor3f(0.878, 0, 0.878);
+		//glRectf(-35, 295, 25, 335);
+		//glColor3f(0.678, 0, 0.678);
+		//glRectf(-35, 335, 25, 360);
+		//// stopuri
+		//glColor3f(1, 0, 0);
+		//glRectf(-30, 265, -20, 270);
+		//glColor3f(1, 0, 0);
+		//glRectf(10, 265, -60, 270);
+		//// faruri fata
+		//glColor3f(1, 1, 0);
+		//glRectf(-30, 360, -20, 365);
+		//glColor3f(1, 1, 0);
+		//glRectf(-10, 360, -60, 365);
 		glPopMatrix();
 
 		glPushMatrix();
 		glTranslated(0, iObstacol3, 0);
 		glColor3f(0, 0, 0);
 		//glRectf(110, 270, 180, 300);
-		glRectf(95, 270, 160, 360);
+		glRectf(95, 270, 155, 360);
 		glPopMatrix();
+
+		glColor4f(0.012, 0.0, 0.529, 0.25);
+		glRectf(-1000., -1000., 1000, 1000.);
+
 
 		// incrementare pentru girofar si alte translatii
 		glutIdleFunc(miscareGirofar);
@@ -413,13 +453,6 @@ void desenDrum(void)
 		displayText(23, -31, 1, 1, 1, highScoreDisplayable);
 
 		glutSwapBuffers();
-	}
-	frameRate++;
-	finalTime = time(NULL);
-	if (finalTime - initialTime > 0) {
-		cout << "FPS: " << frameRate / (finalTime - initialTime) << endl;
-		frameRate = 0;
-		initialTime = finalTime;
 	}
 }
 
@@ -456,7 +489,6 @@ void main(int argc, char** argv)
 
 	glutTimerFunc(5000, Obstacole, 0);
 	glutTimerFunc(100, increaseScore, 0);
-	glutTimerFunc(1000 / FPS, idle, 0);
 
 	glutSpecialFunc(keyPressed);
 	glutSpecialUpFunc(keyUp);
@@ -467,4 +499,3 @@ void main(int argc, char** argv)
 	glutMainLoop();
 
 }
-
