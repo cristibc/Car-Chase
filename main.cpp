@@ -205,7 +205,7 @@ void Obstacole(int value) {
 }
 
 bool Collision(double x1, double y1, double x2, double y2, double xWidth, double xHeight, double yWidth, double yHeight) {
-	//double x1, y1, x2, y2, width, height;
+	// double x1, y1, x2, y2, width, height;
 	if (x1 < x2 + yWidth && x1 + xWidth > x2 && y1 < y2 + yHeight && y1 + xHeight > y2)
 	{
 		//collisionCheck = true;
@@ -245,7 +245,7 @@ void drawCoin() {
 	glScalef(40, 40, 0);
 	glColor3f(0.855, 0.647, 0.125);
 	glBegin(GL_TRIANGLE_FAN);
-	glVertex2f(0, 0); // Center of the circle
+	glVertex2f(0, 0);
 	for (int i = 0; i <= 360; i += 5) {
 		float radian = i * (3.14159 / 180.0);
 		float x = 0.5 * cos(radian);
@@ -254,10 +254,9 @@ void drawCoin() {
 	}
 	glEnd();
 
-	// Draw the inner circle
 	glColor3f(1.0, 0.937, 0.537);
 	glBegin(GL_TRIANGLE_FAN);
-	glVertex2f(0, 0); // Center of the circle
+	glVertex2f(0, 0);
 	for (int i = 0; i <= 360; i += 5) {
 		float radian = i * (3.14159 / 180.0);
 		float x = 0.4 * cos(radian);
@@ -266,25 +265,25 @@ void drawCoin() {
 	}
 	glEnd();
 
-	// Draw the star in the middle
-	glLineWidth(2.0); // Set line width to 2.0
+	//Steluta din mijloc
+	glLineWidth(2.0);
 	glColor3f(0.855, 0.647, 0.125);
 	glBegin(GL_TRIANGLES);
-	float radius = 0.35; // Updated radius of the star
+	float radius = 0.35;
 	for (int i = 0; i < 5; i++) {
 		float angle1 = i * 72 * (3.14159 / 180.0);
 		float angle2 = (i + 2) % 5 * 72 * (3.14159 / 180.0);
 		float x1 = radius * cos(angle1);
 		float y1 = radius * sin(angle1);
-		float x2 = 0.5 * radius * cos(angle2); // Adjusted x-coordinate for chubbier appearance
-		float y2 = 0.5 * radius * sin(angle2); // Adjusted y-coordinate for chubbier appearance
+		float x2 = 0.5 * radius * cos(angle2);
+		float y2 = 0.5 * radius * sin(angle2);
 
 		glVertex2f(x1, y1);
 		glVertex2f(0, 0);
 		glVertex2f(x2, y2);
 	}
 	glEnd();
-	glLineWidth(1.0); // Reset line width to default
+	glLineWidth(1.0);
 	glPopMatrix();
 }
 
@@ -308,7 +307,7 @@ void miscareGirofar(void) {
 	}
 
 	// Indice pentru axul drumului, indica viteza scenei
-	iViteza += 1 + speed / 400;
+	iViteza += 2 + speed / 400;
 	if (iViteza > 519) {
 		iViteza = 260;
 	}
@@ -358,8 +357,7 @@ void miscareGirofar(void) {
 		xCoin = 0;
 		yCoin = -300;
 		score += 100;
-		sndPlaySound(TEXT("coin.wav"), SND_ASYNC);
-
+		//sndPlaySound(TEXT("coin.wav"), SND_ASYNC);
 	}
 
 	//TODO add power-ups
@@ -394,8 +392,7 @@ static void init(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Muzica fundal
-	//sndPlaySound(TEXT("nightrider.wav"), SND_ASYNC);
-
+	PlaySound(TEXT("nightrider.wav"), NULL, SND_ASYNC | SND_LOOP);
 }
 
 // Functie check activata la eliberarea tastelor
@@ -410,7 +407,6 @@ void keyUp(int key, int x, int y) {
 	default:
 		break;
 	}
-
 }
 
 // Functie check activata la apasarea tastelor, implementare smooth
@@ -426,6 +422,9 @@ void keyPressed(int key, int x, int y)
 	case GLUT_KEY_HOME:
 		glClearColor(0, 0.839, 0.082, 1);
 		collisionCheck = false;
+		iObstacol1 = 0;
+		iObstacol2 = 0;
+		iObstacol3 = 0;
 		score = 0;
 		speed = 0;
 		break;
@@ -444,11 +443,9 @@ void desenDrum(void)
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-
 		// Fundal
 		glColor3f(0, 0, 0.2);
 		glRectf(-1000., -1000., 1000, 1000.);
-
 
 		// DRUMUL
 		glColor3f(0.2, 0.2, 0.2);
@@ -472,7 +469,6 @@ void desenDrum(void)
 		// initializare pentru tranzitii
 		glPushMatrix();
 		glTranslated(i, 0, 0);
-
 
 		// MASINA DE POLITIE
 		// sasiu
@@ -501,7 +497,6 @@ void desenDrum(void)
 		//glColor3f(0.8, 0.5, 0);
 		//glRectf(65, -90, 75, -85);
 
-
 		glColor4f(1, 1, 0, 0.05);
 		glBegin(GL_TRIANGLES);
 		glVertex2f(30, -85);
@@ -514,10 +509,7 @@ void desenDrum(void)
 
 		glEnd();
 
-
 		// GIROFAR
-
-
 		glTranslated(50, -135, 0);
 		glRotated(j, 0, 0, 1);
 		glTranslated(-50, 135, 0);
@@ -529,7 +521,6 @@ void desenDrum(void)
 		glVertex2f(50, -135);
 		glVertex2f(10, -155);
 		glEnd();
-
 
 		glColor4f(0, 0, 1, 0.5);
 		glBegin(GL_TRIANGLES);
@@ -579,7 +570,6 @@ void desenDrum(void)
 		glPopMatrix();
 
 
-
 		// Layer transparent overlay blue
 		glColor4f(0.012, 0.0, 0.529, 0.25);
 		glRectf(-1000., -1000., 1000, 1000.);
@@ -623,8 +613,6 @@ void winReshapeFcn(GLint newWidth, GLint newHeight)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(-250.0, 250.0, -250.0, 250.0);
-	//gluOrtho2D(-500.0, 500.0, -500.0, 500.0);
-
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -649,7 +637,6 @@ void main(int argc, char** argv)
 	glutTimerFunc(5000, Obstacole, 0);
 	glutTimerFunc(100, increaseScore, 0);
 	glutTimerFunc(100, increaseSpeed, 0);
-
 
 	glutSpecialFunc(keyPressed);
 	glutSpecialUpFunc(keyUp);
