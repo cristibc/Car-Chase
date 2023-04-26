@@ -7,7 +7,6 @@
 #include <random>
 #include <string> 
 
-#define FPS 30
 using namespace std;
 
 const double TWO_PI = 6.2831853;
