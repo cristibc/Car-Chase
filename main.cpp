@@ -136,6 +136,63 @@ void Collision(double x1, double y1, double x2, double y2, double xWidth, double
 
 }
 
+void buildCar(int x, int y) {
+	//Model Initial
+	//glRectf(-160, 270, -100, 360);
+	float R = 0;
+	float G = 0;
+	float B = 0;
+
+	int pickPrimary = rand() % 6;
+	if (pickPrimary == 0) {
+		R = 1;
+		G = (float)rand() / (float)RAND_MAX;
+		B = 0;
+	}
+	else if (pickPrimary == 1) {
+		R = (float)rand() / (float)RAND_MAX;
+		G = 1;
+		B = 0;
+	}
+	else if (pickPrimary == 2) {
+		R = 0;
+		G = 1;
+		B = (float)rand() / (float)RAND_MAX;
+	}
+	else if (pickPrimary == 3) {
+		R = 0;
+		G = (float)rand() / (float)RAND_MAX;
+		B = 1;
+	}
+	else if (pickPrimary == 4) {
+		R = (float)rand() / (float)RAND_MAX;
+		G = 0;
+		B = 1;
+	}
+	else if (pickPrimary == 5) {
+		R = 1;
+		G = 0;
+		B = (float)rand() / (float)RAND_MAX;
+	}
+	//Sasiu
+	glColor3f(R, G, B);
+	glRectf(x, y, x+60, y+25);
+	glColor3f(R-0.3, G-0.3, B-0.3);
+	glRectf(x, y+25, x+60, y+65);
+	glColor3f(R, G, B);
+	glRectf(x, y+65, x+60, y+90);
+	// stopuri
+	glColor3f(1, 0, 0);
+	glRectf(x+5, y-5, x+15, y);
+	glColor3f(1, 0, 0);
+	glRectf(x+45, y-5, x+55, y);
+	// faruri fata
+	glColor3f(1, 1, 0);
+	glRectf(x+5, y+90, x+15, y+95);
+	glColor3f(1, 1, 0);
+	glRectf(x+45, y+90, x+55, y+95);
+}
+
 void miscareGirofar(void) {
 	// pentru girofar
 	j += 0.05;
@@ -368,57 +425,30 @@ void desenDrum(void)
 		glTranslated(0, iObstacol1, 0);
 		//glColor3f(0, 0, 0);
 		//glRectf(-160, 270, -100, 360);
-
-		//Sasiu
-		glColor3f(0.678, 0, 0.678);
-		glRectf(-160, 270, -100, 295);
-		glColor3f(0.878, 0, 0.878);
-		glRectf(-160, 295, -100, 335);
-		glColor3f(0.678, 0, 0.678);
-		glRectf(-160, 335, -100, 360);
-		// stopuri
-		glColor3f(1, 0, 0);
-		glRectf(-155, 265, -145, 270);
-		glColor3f(1, 0, 0);
-		glRectf(-115, 265, -105, 270);
-		// faruri fata
-		glColor3f(1, 1, 0);
-		glRectf(-155, 360, -145, 365);
-		glColor3f(1, 1, 0);
-		glRectf(-115, 360, -105, 365);
+		srand(time(NULL));
+		buildCar(-160, 270);
 
 		glPopMatrix();
 
 		// Obstacol2
 		glPushMatrix();
 		glTranslated(0, iObstacol2, 0);
-		glColor3f(0, 0, 0);
-		glRectf(-35, 270, 25, 360);
+		//glColor3f(0, 0, 0);
+		//glRectf(-35, 270, 25, 360);
 
-		//		//Sasiu
-		//glColor3f(0.678, 0, 0.678);
-		//glRectf(-35, 270, 25, 295);
-		//glColor3f(0.878, 0, 0.878);
-		//glRectf(-35, 295, 25, 335);
-		//glColor3f(0.678, 0, 0.678);
-		//glRectf(-35, 335, 25, 360);
-		//// stopuri
-		//glColor3f(1, 0, 0);
-		//glRectf(-30, 265, -20, 270);
-		//glColor3f(1, 0, 0);
-		//glRectf(10, 265, -60, 270);
-		//// faruri fata
-		//glColor3f(1, 1, 0);
-		//glRectf(-30, 360, -20, 365);
-		//glColor3f(1, 1, 0);
-		//glRectf(-10, 360, -60, 365);
+		srand(time(NULL));
+		buildCar(-35, 270);
+
 		glPopMatrix();
 
+		// Obstacol3
 		glPushMatrix();
 		glTranslated(0, iObstacol3, 0);
-		glColor3f(0, 0, 0);
-		//glRectf(110, 270, 180, 300);
-		glRectf(95, 270, 155, 360);
+		//glColor3f(0, 0, 0);
+		//glRectf(95, 270, 155, 360);
+
+		srand(time(NULL));
+		buildCar(95, 270);
 		glPopMatrix();
 
 		glColor4f(0.012, 0.0, 0.529, 0.25);
