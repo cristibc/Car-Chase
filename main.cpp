@@ -37,16 +37,9 @@ double yCoin = 320;
 double scaleCoin = 0.9;
 int switcher = 1;
 bool displayCoin = false;
-GLuint textureWater, textureDonut;
+GLuint textureWater;
 
-
-
-void delay(unsigned int milisecunde)
-{
-	clock_t goal = milisecunde + clock();
-	while (goal > clock());
-}
-
+// Functie pentru incrementarea scorului 
 void increaseScore(int value) {
 	if (collisionCheck != true) {
 		score += 1;
@@ -54,6 +47,7 @@ void increaseScore(int value) {
 	glutTimerFunc(100, increaseScore, 0);
 }
 
+// Viteza jocului creste cu timpul
 void increaseSpeed(int value) {
 	if (collisionCheck != true) {
 		speed += 1;
@@ -84,6 +78,7 @@ public:
 	}
 };
 
+// Functie pentru adaugarea textului mai usor
 void displayText(int x, int y, float r, float g, float b, const char* string)
 {
 	glColor3f(r, g, b);
@@ -95,6 +90,7 @@ void displayText(int x, int y, float r, float g, float b, const char* string)
 	}
 }
 
+// Functie legata de coin, putem ajusta cat de des apare prin variabila chance
 void generateLucky() {
 	int isLucky;
 	xCoin = 0;
@@ -112,6 +108,7 @@ void generateLucky() {
 	}
 }
 
+// Functie care genereaza culori random pentru masinile obstacole
 void generateColor(void) {
 
 	int pickPrimary = rand() % 6;
@@ -147,6 +144,7 @@ void generateColor(void) {
 	}
 }
 
+// Generatorul de masini obstacole, acestea sunt generate random
 void Obstacole(int value) {
 	// Initializam indicele pentru translatie
 	iObstacol1 = 0;
@@ -208,6 +206,7 @@ void Obstacole(int value) {
 
 }
 
+// Functia care detecteaza coliziuni, foloseste formula AABB
 bool Collision(double x1, double y1, double x2, double y2, double xWidth, double xHeight, double yWidth, double yHeight) {
 	// double x1, y1, x2, y2, width, height;
 	if (x1 < x2 + yWidth && x1 + xWidth > x2 && y1 < y2 + yHeight && y1 + xHeight > y2)
@@ -218,6 +217,7 @@ bool Collision(double x1, double y1, double x2, double y2, double xWidth, double
 	return 0;
 }
 
+// Un generator de masini pentru obstacole
 void buildCar(int x, int y, float R, float G, float B) {
 	//Model Initial
 	//glRectf(-160, 270, -100, 360);
@@ -244,6 +244,7 @@ void buildCar(int x, int y, float R, float G, float B) {
 	glRectf(x + 45, y + 90, x + 55, y + 95);
 }
 
+// Generatorul de coin-uri
 void drawCoin() {
 	glPushMatrix();
 	glScalef(40, 40, 0);
@@ -291,7 +292,8 @@ void drawCoin() {
 	glPopMatrix();
 }
 
-void miscareGirofar(void) {
+// Functia care se ocupa de incrementarea valorilor si de toate miscarile din joc + coliziuni
+void events(void) {
 	// pentru girofar
 	j += 0.05;
 	if (j > 360) {
@@ -316,6 +318,7 @@ void miscareGirofar(void) {
 		iViteza = 260;
 	}
 
+	// Scale pentru coin, mai usor de vazut
 	scaleCoin += 0.005 * switcher;
 	if (scaleCoin > 1.1 || scaleCoin < 0.9) {
 		switcher = switcher * -1;
@@ -369,7 +372,6 @@ void miscareGirofar(void) {
 		//sndPlaySound(TEXT("coin.wav"), SND_ASYNC);
 	}
 
-	//TODO add power-ups
 	glutPostRedisplay();
 }
 
@@ -401,9 +403,10 @@ static void init(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Muzica fundal
-	//PlaySound(TEXT("nightrider.wav"), NULL, SND_ASYNC | SND_LOOP);
+	PlaySound(TEXT("nightrider.wav"), NULL, SND_ASYNC | SND_LOOP);
+
+	// Initializarea texturii de apa
 	textureWater = SOIL_load_OGL_texture("water4.jpg", SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_MIPMAPS);
-	textureDonut = SOIL_load_OGL_texture("donut.png", SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, SOIL_FLAG_NTSC_SAFE_RGB);
 
 }
 
@@ -449,7 +452,7 @@ void keyPressed(int key, int x, int y)
 	glutPostRedisplay();
 }
 
-
+// Functia care se ocupa cu desenarea scenei
 void desenDrum(void)
 {
 	if (collisionCheck != true)
@@ -457,7 +460,6 @@ void desenDrum(void)
 		glClear(GL_COLOR_BUFFER_BIT);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-
 
 		// Textura apa
 		glPushMatrix();
@@ -475,7 +477,7 @@ void desenDrum(void)
 		glDisable(GL_TEXTURE_2D);
 		glPopMatrix();
 
-		// Fundal
+		// Fundal fara textura
 		//glColor3f(0, 0, 0.2);
 		//glRectf(-1000., -1000., 1000, 1000.);
 
@@ -532,12 +534,6 @@ void desenDrum(void)
 		glColor3f(1, 1, 0);
 		glRectf(65, -90, 75, -85);
 
-		// faruri triunghi original
-		//glColor3f(0.8, 0.5, 0);
-		//glRectf(25, -90, 35, -85);
-		//glColor3f(0.8, 0.5, 0);
-		//glRectf(65, -90, 75, -85);
-
 		glColor4f(1, 1, 0, 0.05);
 		glBegin(GL_TRIANGLES);
 		glVertex2f(30, -85);
@@ -555,7 +551,6 @@ void desenDrum(void)
 		glRotated(j, 0, 0, 1);
 		glTranslated(-50, 135, 0);
 
-		//girofar
 		glColor4f(1, 0, 0, 0.5);
 		glBegin(GL_TRIANGLES);
 		glVertex2f(10, -115);
@@ -576,7 +571,7 @@ void desenDrum(void)
 
 		// Obstacole
 
-		//Obstacol1
+		// Prima banda (stanga -> dreapta)
 		glPushMatrix();
 		glTranslated(0, iObstacol1, 0);
 		//glColor3f(0, 0, 0);
@@ -585,7 +580,7 @@ void desenDrum(void)
 
 		glPopMatrix();
 
-		// Obstacol2
+		// A doua banda
 		glPushMatrix();
 		glTranslated(0, iObstacol2, 0);
 		//glColor3f(0, 0, 0);
@@ -594,7 +589,7 @@ void desenDrum(void)
 
 		glPopMatrix();
 
-		// Obstacol3
+		// A treia banda
 		glPushMatrix();
 		glTranslated(0, iObstacol3, 0);
 		//glColor3f(0, 0, 0);
@@ -603,7 +598,7 @@ void desenDrum(void)
 		buildCar(95, 270, genR3, genG3, genB3);
 		glPopMatrix();
 
-		// Coin
+		// Coin, translatie + scale
 
 		glPushMatrix();
 		glTranslated(xCoin, yCoin, 0);
@@ -617,17 +612,21 @@ void desenDrum(void)
 		glRectf(-1000., -1000., 1000, 1000.);
 
 		// incrementare pentru girofar si alte translatii
-		glutIdleFunc(miscareGirofar);
+		glutIdleFunc(events);
 
-		displayText(-240, 220, 1, 1, 1, "Score: ");
+		// Textul cu scor, stanga sus
+		displayText(-190, 220, 1, 1, 1, "Score: ");
 		string scoreString = to_string(int(score));
 		const char* scoreDisplayable = scoreString.c_str();
-		displayText(-195, 219, 1, 1, 1, scoreDisplayable);
+		displayText(-145, 219, 1, 1, 1, scoreDisplayable);
 
 		glutSwapBuffers();
 		glFlush();
 
 	}
+
+	// Daca este detectata o coliziune, scena este inlocuita cu una neagra + high score
+	// Si majoritatea functiilor sunt puse pe pauza, pana la restart
 	else {
 		int highScore = score;
 		string highScoreString = to_string(highScore);
@@ -677,6 +676,7 @@ void main(int argc, char** argv)
 	glutDisplayFunc(desenDrum);
 	glutReshapeFunc(winReshapeFcn);
 
+	// Loop-uri initiale pentru functii care sunt apelate o data la un timp fix
 	glutTimerFunc(5000, Obstacole, 0);
 	glutTimerFunc(100, increaseScore, 0);
 	glutTimerFunc(100, increaseSpeed, 0);
