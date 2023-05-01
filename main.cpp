@@ -418,15 +418,18 @@ void keyPressed(int key, int x, int y)
 	case GLUT_KEY_RIGHT:
 		rightUpPressed = true;
 		break;
-	case GLUT_KEY_HOME:
-		glClearColor(0, 0.839, 0.082, 1);
-		collisionCheck = false;
-		iObstacol1 = 0;
-		iObstacol2 = 0;
-		iObstacol3 = 0;
-		score = 0;
-		speed = 0;
-		break;
+	case GLUT_KEY_UP:
+		if (collisionCheck == true) {
+			glClearColor(0, 0.839, 0.082, 1);
+			collisionCheck = false;
+			iObstacol1 = 600;
+			iObstacol2 = 600;
+			iObstacol3 = 600;
+			yCoin = -600;
+			score = 0;
+			speed = 0;
+			break;
+		}
 	default:
 		break;
 	}
@@ -598,6 +601,7 @@ void desenDrum(void)
 		glColor3f(0.5, 1, 1);
 		displayText(-50, 0, 1, 1, 1, "Game Over!");
 		displayText(-60, -30, 1, 1, 1, "High Score: ");
+		displayText(-75, -60, 1, 1, 1, "Press UP to restart ");
 		displayText(23, -31, 1, 1, 1, highScoreDisplayable);
 
 		glutSwapBuffers();
