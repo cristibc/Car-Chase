@@ -6,6 +6,7 @@
 #include <time.h>
 #include <random>
 #include <string> 
+#include "SOIL.h"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ double i = -50;
 double j = 1.0;
 double k = 0;
 double iViteza = 260;
-GLsizei winWidth = 750, winHeight = 750;
+GLsizei winWidth = 850, winHeight = 750;
 GLuint traficID;
 static GLfloat rotTheta = 0.0;
 GLboolean leftUpPressed = false;
@@ -33,7 +34,11 @@ float genR3, genG3, genB3;
 int chance = 50;
 double xCoin = 0;
 double yCoin = 320;
+double scaleCoin = 0.9;
+int switcher = 1;
 bool displayCoin = false;
+GLuint textureWater, textureDonut;
+
 
 
 void delay(unsigned int milisecunde)
@@ -311,6 +316,11 @@ void miscareGirofar(void) {
 		iViteza = 260;
 	}
 
+	scaleCoin += 0.005 * switcher;
+	if (scaleCoin > 1.1 || scaleCoin < 0.9) {
+		switcher = switcher * -1;
+	}
+
 	// Indice pentru translatia obstacolelor
 	if (initObstacle1 == 1 && iObstacol1 > -650) {
 		iObstacol1 -= 1 + speed / 400;
@@ -338,7 +348,7 @@ void miscareGirofar(void) {
 	}
 
 	// Collision check for obstacles
-	if (Collision(-150, iObstacol1 + 360, i + 20, -90, 60, 90, 60, 90) == 1) {
+	if (Collision(-160, iObstacol1 + 360, i + 20, -90, 60, 90, 60, 90) == 1) {
 		collisionCheck = true;
 	}
 
@@ -391,7 +401,10 @@ static void init(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Muzica fundal
-	PlaySound(TEXT("nightrider.wav"), NULL, SND_ASYNC | SND_LOOP);
+	//PlaySound(TEXT("nightrider.wav"), NULL, SND_ASYNC | SND_LOOP);
+	textureWater = SOIL_load_OGL_texture("water4.jpg", SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_MIPMAPS);
+	textureDonut = SOIL_load_OGL_texture("donut.png", SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, SOIL_FLAG_NTSC_SAFE_RGB);
+
 }
 
 // Functie check activata la eliberarea tastelor
@@ -445,13 +458,39 @@ void desenDrum(void)
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		// Fundal
-		glColor3f(0, 0, 0.2);
-		glRectf(-1000., -1000., 1000, 1000.);
 
-		// DRUMUL
+		// Textura apa
+		glPushMatrix();
+		glTranslatef(0, -iViteza/2, 0);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, textureWater);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0, 0);			glVertex3f(-1000, -1000, 0);
+		glTexCoord2f(10, 0);			glVertex3f(1000, -1000, 0);
+		glTexCoord2f(10, 10);			glVertex3f(1000, 1000, 0);
+		glTexCoord2f(0, 10);			glVertex3f(-1000, 1000, 0);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
+
+		// Fundal
+		//glColor3f(0, 0, 0.2);
+		//glRectf(-1000., -1000., 1000, 1000.);
+
+		// DRUMUL + umbra pod
 		glColor3f(0.2, 0.2, 0.2);
 		glRectf(-200., -1000., 200., 1000.);
+
+		glColor3f(0.9, 0.9, 0.9);
+		glRectf(-195., -1000, -205, 1000);
+
+		glColor3f(0.9, 0.9, 0.9);
+		glRectf(195., -1000, 205, 1000);
+
+		glColor4f(0, 0, 0, 0.6);
+		glRectf(205, -1000, 270, 1000);
 
 		// Linia ce separa benzile - dashed
 		glEnable(GL_LINE_STIPPLE);
@@ -568,6 +607,7 @@ void desenDrum(void)
 
 		glPushMatrix();
 		glTranslated(xCoin, yCoin, 0);
+		glScalef(scaleCoin, scaleCoin, 0);
 		drawCoin();
 		glPopMatrix();
 
@@ -615,7 +655,7 @@ void winReshapeFcn(GLint newWidth, GLint newHeight)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(-250.0, 250.0, -250.0, 250.0);
+	gluOrtho2D(-300.0, 300.0, -250.0, 250.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -645,7 +685,6 @@ void main(int argc, char** argv)
 	glutSpecialUpFunc(keyUp);
 
 	glutAttachMenu(GLUT_MIDDLE_BUTTON);
-	Sleep(1);
 
 	glutMainLoop();
 
