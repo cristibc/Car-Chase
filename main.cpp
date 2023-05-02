@@ -210,7 +210,6 @@ void Obstacole(int value) {
 
 // Functia care detecteaza coliziuni, foloseste formula AABB
 bool Collision(double x1, double y1, double x2, double y2, double xWidth, double xHeight, double yWidth, double yHeight) {
-	// double x1, y1, x2, y2, width, height;
 	if (x1 < x2 + yWidth && x1 + xWidth > x2 && y1 < y2 + yHeight && y1 + xHeight > y2)
 	{
 		//collisionCheck = true;
@@ -376,6 +375,7 @@ void events(void) {
 		xCoin = 0;
 		yCoin = -300;
 		score += 100;
+		// Sunet optional pentru coin
 		//sndPlaySound(TEXT("coin.wav"), SND_ASYNC);
 	}
 
@@ -405,12 +405,12 @@ static void init(void)
 	}
 	glEndList();
 
-	// pentru opacitatea culorilor
+	// Pentru opacitatea culorilor
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Muzica fundal
-	//PlaySound(TEXT("nightrider.wav"), NULL, SND_ASYNC | SND_LOOP);
+	PlaySound(TEXT("nightrider.wav"), NULL, SND_ASYNC | SND_LOOP);
 
 	// Initializarea texturii de apa
 	textureWater = SOIL_load_OGL_texture("water4.jpg", SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_MIPMAPS);
@@ -652,7 +652,6 @@ void desenDrum(void)
 		int highScore = score;
 		string highScoreString = to_string(highScore);
 		const char* highScoreDisplayable = highScoreString.c_str();
-		//glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glutIdleFunc(NULL);
 
@@ -677,7 +676,6 @@ void desenDrum(void)
 		// Schimbam environment-ul texturii pentru a nu intra in conflict cu culorile font-ului generat mai jos
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-		//displayText(-50, 0, 1, 1, 1, "Game Over!");
 		displayText(-60, 70, 0, 0, 0, "High Score: ");
 		displayText(-75, 40, 0, 0, 0, "Press UP to restart ");
 		displayText(23, 69, 0, 0, 0, highScoreDisplayable);
