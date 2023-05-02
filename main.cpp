@@ -37,7 +37,8 @@ double yCoin = 320;
 double scaleCoin = 0.9;
 int switcher = 1;
 bool displayCoin = false;
-GLuint textureWater;
+GLuint textureWater, textureCrash, textureLilypad;
+double yLilypad;
 
 // Functie pentru incrementarea scorului 
 void increaseScore(int value) {
@@ -81,13 +82,14 @@ public:
 // Functie pentru adaugarea textului mai usor
 void displayText(int x, int y, float r, float g, float b, const char* string)
 {
-	glColor3f(r, g, b);
-	glRasterPos2f(x, y);
-	int len, i;
-	len = (int)strlen(string);
-	for (i = 0; i < len; i++) {
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
-	}
+		glColor3f(r, g, b);
+		glRasterPos2f(x, y);
+		int len, i;
+		len = (int)strlen(string);
+		for (i = 0; i < len; i++) {
+			glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
+		}
+	
 }
 
 // Functie legata de coin, putem ajusta cat de des apare prin variabila chance
@@ -294,7 +296,7 @@ void drawCoin() {
 
 // Functia care se ocupa de incrementarea valorilor si de toate miscarile din joc + coliziuni
 void events(void) {
-	// pentru girofar
+	// Pentru girofar
 	j += 0.05;
 	if (j > 360) {
 		j = 0;
@@ -316,6 +318,11 @@ void events(void) {
 	iViteza += 2 + speed / 400;
 	if (iViteza > 519) {
 		iViteza = 260;
+	}
+
+	yLilypad -= 1;
+	if (yLilypad < -300) {
+		yLilypad = 1000;
 	}
 
 	// Scale pentru coin, mai usor de vazut
@@ -403,10 +410,12 @@ static void init(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Muzica fundal
-	PlaySound(TEXT("nightrider.wav"), NULL, SND_ASYNC | SND_LOOP);
+	//PlaySound(TEXT("nightrider.wav"), NULL, SND_ASYNC | SND_LOOP);
 
 	// Initializarea texturii de apa
 	textureWater = SOIL_load_OGL_texture("water4.jpg", SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_MIPMAPS);
+	textureCrash = SOIL_load_OGL_texture("crash.png", SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, SOIL_FLAG_NTSC_SAFE_RGB);
+	textureLilypad = SOIL_load_OGL_texture("lily.png", SOIL_LOAD_RGBA, SOIL_CREATE_NEW_ID, SOIL_FLAG_NTSC_SAFE_RGB);
 
 }
 
@@ -606,6 +615,18 @@ void desenDrum(void)
 		drawCoin();
 		glPopMatrix();
 
+		glPushMatrix();
+		glTranslated(-260, yLilypad, 0);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, textureLilypad);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0, 1);			glVertex3f(-10, -10, 0);
+		glTexCoord2f(1, 1);			glVertex3f(10, -10, 0);
+		glTexCoord2f(1, 0);			glVertex3f(10, 10, 0);
+		glTexCoord2f(0, 0);			glVertex3f(-10, 10, 0);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
 
 		// Layer transparent overlay blue
 		glColor4f(0.012, 0.0, 0.529, 0.25);
@@ -631,21 +652,40 @@ void desenDrum(void)
 		int highScore = score;
 		string highScoreString = to_string(highScore);
 		const char* highScoreDisplayable = highScoreString.c_str();
-		glClearColor(0, 0, 0, 1);
+		//glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glutIdleFunc(NULL);
+
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
+		glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, textureCrash);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0, 1);			glVertex3f(-300, -250, 0);
+		glTexCoord2f(1, 1);			glVertex3f(300, -250, 0);
+		glTexCoord2f(1, 0);			glVertex3f(300, 250, 0);
+		glTexCoord2f(0, 0);			glVertex3f(-300, 250, 0);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
+
 		iObstacol1 = 0;
 		iObstacol2 = 0;
 		iObstacol3 = 0;
-		glColor3f(0.5, 1, 1);
-		displayText(-50, 0, 1, 1, 1, "Game Over!");
-		displayText(-60, -30, 1, 1, 1, "High Score: ");
-		displayText(-75, -60, 1, 1, 1, "Press UP to restart ");
-		displayText(23, -31, 1, 1, 1, highScoreDisplayable);
 
+		// Schimbam environment-ul texturii pentru a nu intra in conflict cu culorile font-ului generat mai jos
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+		//displayText(-50, 0, 1, 1, 1, "Game Over!");
+		displayText(-60, 70, 0, 0, 0, "High Score: ");
+		displayText(-75, 40, 0, 0, 0, "Press UP to restart ");
+		displayText(23, 69, 0, 0, 0, highScoreDisplayable);
 		glutSwapBuffers();
+		glFlush();
 	}
 }
+
 
 
 void winReshapeFcn(GLint newWidth, GLint newHeight)
@@ -663,13 +703,13 @@ void winReshapeFcn(GLint newWidth, GLint newHeight)
 }
 
 
-void main(int argc, char** argv)
+void main(int argc, char** argv) 
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowPosition(150, 150);
 	glutInitWindowSize(winWidth, winHeight);
-	glutCreateWindow("Trafic - Masina de politie");
+	glutCreateWindow("Highway Racer");
 
 	init();
 
